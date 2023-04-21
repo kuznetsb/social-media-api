@@ -1,5 +1,8 @@
 from django.contrib.auth import get_user_model
-from rest_framework import serializers
+from rest_framework import serializers, status
+from rest_framework.response import Response
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -22,3 +25,19 @@ class UserSerializer(serializers.ModelSerializer):
             user.save()
 
         return user
+
+
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField(max_length=255)
+
+    def validate(self, attrs):
+        self.refresh = attrs["refresh"]
+
+        return attrs
+
+    def save(self, **kwargs):
+        try:
+            RefreshToken(self.refresh).blacklist()
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except TokenError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
