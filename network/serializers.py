@@ -22,3 +22,11 @@ class UserDetailSerializer(serializers.ModelSerializer):
             "image",
             "bio",
         )
+
+
+class UserFollowSerializer(UserDetailSerializer):
+    pass
+
+
+class UserUnfollowSerializer(UserDetailSerializer):
+    pass
