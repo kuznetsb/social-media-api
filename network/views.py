@@ -1,3 +1,13 @@
-from django.shortcuts import render
+from django.contrib.auth import get_user_model
+from rest_framework import mixins, viewsets
+from rest_framework.permissions import IsAuthenticated
 
-# Create your views here.
+from network.serializers import UserListSerializer
+
+
+class UserViewSet(
+    mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
+):
+    serializer_class = UserListSerializer
+    queryset = get_user_model().objects.all()
+    permission_classes = (IsAuthenticated,)
