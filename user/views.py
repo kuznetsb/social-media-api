@@ -2,7 +2,12 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from user.serializers import UserSerializer, LogoutSerializer
+from user.serializers import (
+    UserSerializer,
+    LogoutSerializer,
+    UserImageSerializer,
+    UserDetailSerializer,
+)
 
 
 class UserCreateView(generics.CreateAPIView):
@@ -10,11 +15,26 @@ class UserCreateView(generics.CreateAPIView):
 
 
 class UserManageView(generics.RetrieveUpdateAPIView):
-    serializer_class = UserSerializer
+    serializer_class = UserDetailSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_object(self):
         return self.request.user
+
+
+class UploadMyImageView(generics.GenericAPIView):
+    serializer_class = UserImageSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        user = request.user
+        serializer = self.serializer_class(user, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LogoutView(generics.GenericAPIView):
