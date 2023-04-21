@@ -7,3 +7,18 @@ class UserListSerializer(serializers.ModelSerializer):
         model = get_user_model()
         fields = ("id", "email", "full_name", "is_staff")
         read_only_fields = ("id", "email", "full_name", "is_staff")
+
+
+class UserDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ("id", "email", "first_name", "last_name", "is_staff", "image", "bio")
+        read_only_fields = (
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "is_staff",
+            "image",
+            "bio",
+        )
