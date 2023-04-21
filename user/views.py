@@ -6,7 +6,7 @@ from user.serializers import (
     UserSerializer,
     LogoutSerializer,
     UserImageSerializer,
-    UserDetailSerializer,
+    MyDetailSerializer,
 )
 
 
@@ -15,7 +15,7 @@ class UserCreateView(generics.CreateAPIView):
 
 
 class UserManageView(generics.RetrieveUpdateAPIView):
-    serializer_class = UserDetailSerializer
+    serializer_class = MyDetailSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_object(self):
