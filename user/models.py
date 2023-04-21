@@ -61,6 +61,10 @@ class User(AbstractUser):
 
     objects = UserManager()
 
+    @property
+    def full_name(self):
+        return self.get_full_name()
+
     def __str__(self):
         user = f"User: {self.email}"
         if self.first_name and self.last_name:
