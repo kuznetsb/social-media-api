@@ -74,3 +74,13 @@ class PostListSerializer(PostSerializer):
         model = Post
         fields = ("id", "title", "hashtag", "image", "created_at", "author")
         read_only_fields = ("id", "title", "hashtag", "image", "created_at", "author")
+
+
+class PostDetailSerializer(PostSerializer):
+    class Meta:
+        model = Post
+        fields = ("id", "title", "content", "hashtag", "image", "created_at", "author")
+        read_only_fields = (
+            "id",
+            "author",
+        )

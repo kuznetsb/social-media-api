@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from network.models import Hashtag, Post
+from network.permissions import IsOwnerOrReadOnly
 from network.serializers import (
     UserListSerializer,
     UserDetailSerializer,
@@ -13,6 +14,8 @@ from network.serializers import (
     HashtagSerializer,
     PostSerializer,
     PostImageSerializer,
+    PostListSerializer,
+    PostDetailSerializer,
 )
 
 
@@ -91,7 +94,7 @@ class HashtagViewSet(viewsets.ModelViewSet):
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
 
     def get_queryset(self):
         queryset = Post.objects.select_related("user").prefetch_related("hashtag")
@@ -104,6 +107,10 @@ class PostViewSet(viewsets.ModelViewSet):
         return queryset.distinct()
 
     def get_serializer_class(self):
+        if self.action == "list":
+            return PostListSerializer
+        if self.action == "retrieve":
+            return PostDetailSerializer
         if self.action == "upload_image":
             return PostImageSerializer
         return PostSerializer
