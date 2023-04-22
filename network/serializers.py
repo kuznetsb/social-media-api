@@ -70,7 +70,7 @@ class PostImageSerializer(serializers.ModelSerializer):
 
 
 class PostListSerializer(PostSerializer):
-    hashtag = serializers.SlugRelatedField(read_only=True, many=True, slug_field="name")
+    hashtag = HashtagSerializer(read_only=True, many=True)
 
     class Meta:
         model = Post
@@ -79,7 +79,7 @@ class PostListSerializer(PostSerializer):
 
 
 class PostDetailSerializer(PostSerializer):
-    hashtag = serializers.SlugRelatedField(read_only=True, many=True, slug_field="name")
+    hashtag = HashtagSerializer(read_only=True, many=True)
 
     class Meta:
         model = Post
