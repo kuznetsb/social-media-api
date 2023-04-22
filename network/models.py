@@ -23,9 +23,16 @@ def post_image_file_path(instance, filename):
 
 class Post(models.Model):
     title = models.CharField(max_length=255)
-    content = models.TextField()
-    hashtag = models.ManyToManyField(Hashtag, related_name="posts")
+    content = models.TextField(blank=True)
+    hashtag = models.ManyToManyField(Hashtag, related_name="posts", blank=True)
     image = models.ImageField(null=True, upload_to=post_image_file_path, blank=True)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="posts"
     )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("title", "user")
+
+    def __str__(self):
+        return f"{self.title} post by {self.user} at {self.created_at}"
