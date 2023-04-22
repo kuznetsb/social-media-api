@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import mixins, viewsets, status
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from network.models import Hashtag, Post
@@ -12,6 +12,7 @@ from network.serializers import (
     UserUnfollowSerializer,
     HashtagSerializer,
     PostSerializer,
+    PostImageSerializer,
 )
 
 
@@ -93,5 +94,27 @@ class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
     permission_classes = (IsAuthenticated,)
 
+    def get_serializer_class(self):
+        if self.action == "upload_image":
+            return PostImageSerializer
+        return PostSerializer
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    @action(
+        methods=["POST"],
+        detail=True,
+        url_path="upload-image",
+        description="upload image to post",
+    )
+    def upload_image(self, request, pk=None):
+        post = self.get_object()
+        serializer = self.get_serializer(post, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
