@@ -91,8 +91,17 @@ class HashtagViewSet(viewsets.ModelViewSet):
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
-    serializer_class = PostSerializer
     permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        queryset = Post.objects.select_related("user").prefetch_related("hashtag")
+        if self.action == "list":
+            user = get_user_model().objects.get(id=self.request.user.id)
+            following_users_id = user.users.values_list("id", flat=True)
+            queryset = queryset.filter(
+                user__id__in=list(following_users_id) + [user.id]
+            )
+        return queryset.distinct()
 
     def get_serializer_class(self):
         if self.action == "upload_image":
