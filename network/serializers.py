@@ -70,13 +70,17 @@ class PostImageSerializer(serializers.ModelSerializer):
 
 
 class PostListSerializer(PostSerializer):
+    hashtag = serializers.SlugRelatedField(read_only=True, many=True, slug_field="name")
+
     class Meta:
         model = Post
         fields = ("id", "title", "hashtag", "image", "created_at", "author")
-        read_only_fields = ("id", "title", "hashtag", "image", "created_at", "author")
+        read_only_fields = ("id", "title", "image", "created_at", "author")
 
 
 class PostDetailSerializer(PostSerializer):
+    hashtag = serializers.SlugRelatedField(read_only=True, many=True, slug_field="name")
+
     class Meta:
         model = Post
         fields = ("id", "title", "content", "hashtag", "image", "created_at", "author")
