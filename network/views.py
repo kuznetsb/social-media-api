@@ -179,6 +179,11 @@ class UserToggleFollowView(generics.GenericAPIView):
         """Endpoint to follow or unfollow specific user"""
         following_user = get_user_model().objects.get(id=pk)
         current_user = self.request.user
+        if following_user == current_user:
+            return Response(
+                {"detail": "forbidden to follow yourself"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         serializer = self.get_serializer(following_user, data=request.data)
 
         if serializer.is_valid():
