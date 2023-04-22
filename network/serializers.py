@@ -76,10 +76,20 @@ class PostListSerializer(PostSerializer):
 
 class PostDetailSerializer(PostSerializer):
     hashtags = HashtagSerializer(read_only=True, many=True)
+    liked_by = UserListSerializer(many=True, read_only=True)
 
     class Meta:
         model = Post
-        fields = ("id", "title", "content", "hashtags", "image", "created_at", "author")
+        fields = (
+            "id",
+            "title",
+            "content",
+            "hashtags",
+            "image",
+            "created_at",
+            "author",
+            "liked_by",
+        )
         read_only_fields = (
             "id",
             "author",
