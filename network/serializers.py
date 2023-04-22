@@ -66,10 +66,11 @@ class PostImageSerializer(serializers.ModelSerializer):
 
 class PostListSerializer(PostSerializer):
     hashtags = HashtagSerializer(read_only=True, many=True)
+    likes = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Post
-        fields = ("id", "title", "hashtags", "image", "created_at", "author")
+        fields = ("id", "title", "hashtags", "image", "created_at", "likes", "author")
         read_only_fields = ("id", "title", "image", "created_at", "author")
 
 

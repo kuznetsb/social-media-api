@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.db.models import Count
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import mixins, viewsets, status
@@ -129,7 +130,11 @@ class PostViewSet(viewsets.ModelViewSet):
         return [int(str_id) for str_id in qs.split(",")]
 
     def get_queryset(self):
-        queryset = Post.objects.select_related("user").prefetch_related("hashtags")
+        queryset = (
+            Post.objects.select_related("user")
+            .prefetch_related("hashtags")
+            .annotate(likes=Count("liked_by"))
+        )
         if self.action == "list":
             user = get_user_model().objects.get(id=self.request.user.id)
             following_users_id = user.users.values_list("id", flat=True)
