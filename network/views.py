@@ -32,7 +32,7 @@ class UserViewSet(
         if last_name:
             queryset = queryset.filter(last_name__icontains=last_name)
 
-        return queryset
+        return queryset.distinct()
 
     def get_serializer_class(self):
         if self.action == "list":
