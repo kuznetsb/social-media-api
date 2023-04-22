@@ -2,7 +2,7 @@ import os
 import uuid
 
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth.models import AbstractUser, BaseUserManager, User
 from django.db import models
 from django.utils.translation import gettext as _
 
@@ -66,7 +66,7 @@ class User(AbstractUser):
     objects = UserManager()
 
     @property
-    def full_name(self):
+    def full_name(self) -> str:
         return self.get_full_name()
 
     def __str__(self):
@@ -75,7 +75,7 @@ class User(AbstractUser):
             user += ", Full name:" + self.get_full_name()
         return user
 
-    def toggle_follow(self, user):
+    def toggle_follow(self, user: User) -> None:
         """Switch following parameter for user"""
         if user in self.followed_by.all():
             self.followed_by.remove(user)
