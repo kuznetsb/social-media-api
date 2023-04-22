@@ -103,6 +103,10 @@ class PostViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(
                 user__id__in=list(following_users_id) + [user.id]
             )
+        if self.action == "see_liked_posts":
+            user = get_user_model().objects.get(id=self.request.user.id)
+            queryset = queryset.filter(liked_by__id__in=[user.id])
+
         hashtags = self.request.query_params.get("hashtags")
         if hashtags:
             queryset = queryset.filter(
@@ -112,7 +116,8 @@ class PostViewSet(viewsets.ModelViewSet):
         return queryset.distinct().order_by("-created_at")
 
     def get_serializer_class(self):
-        if self.action == "list":
+        print(self.action)
+        if self.action in ("list", "see_liked_posts"):
             return PostListSerializer
         if self.action == "retrieve":
             return PostDetailSerializer
@@ -139,6 +144,17 @@ class PostViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(
+        methods=["GET"],
+        detail=False,
+        url_path="liked",
+        description="see posts your liked",
+    )
+    def see_liked_posts(self, request):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     @extend_schema(
         parameters=[
