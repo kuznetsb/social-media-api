@@ -10,9 +10,22 @@ class UserListSerializer(serializers.ModelSerializer):
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
+    followers = serializers.SlugRelatedField(
+        source="followed_by", many=True, read_only=True, slug_field="email"
+    )
+
     class Meta:
         model = get_user_model()
-        fields = ("id", "email", "first_name", "last_name", "is_staff", "image", "bio")
+        fields = (
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "is_staff",
+            "image",
+            "bio",
+            "followers",
+        )
         read_only_fields = (
             "id",
             "email",
