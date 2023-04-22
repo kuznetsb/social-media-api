@@ -111,7 +111,9 @@ class PostViewSet(viewsets.ModelViewSet):
             )
         hashtags = self.request.query_params.get("hashtags")
         if hashtags:
-            queryset = queryset.filter(hashtags__id__in=hashtags).order_by("id")
+            queryset = queryset.filter(
+                hashtags__id__in=self._ids_to_ints(hashtags)
+            ).order_by("id")
 
         return queryset.distinct()
 
