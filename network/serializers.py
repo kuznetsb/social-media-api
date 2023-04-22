@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
+from network.models import Hashtag
+
 
 class UserListSerializer(serializers.ModelSerializer):
     class Meta:
@@ -43,3 +45,9 @@ class UserFollowSerializer(UserDetailSerializer):
 
 class UserUnfollowSerializer(UserDetailSerializer):
     pass
+
+
+class HashtagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Hashtag
+        fields = ("id", "name")

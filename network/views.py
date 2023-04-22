@@ -4,11 +4,13 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from network.models import Hashtag
 from network.serializers import (
     UserListSerializer,
     UserDetailSerializer,
     UserFollowSerializer,
     UserUnfollowSerializer,
+    HashtagSerializer,
 )
 
 
@@ -77,3 +79,9 @@ class UserViewSet(
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class HashtagViewSet(viewsets.ModelViewSet):
+    queryset = Hashtag.objects.all()
+    serializer_class = HashtagSerializer
+    permission_classes = (IsAuthenticated,)
