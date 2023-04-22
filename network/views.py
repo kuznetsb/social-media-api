@@ -147,7 +147,7 @@ class PostViewSet(viewsets.ModelViewSet):
                 hashtags__id__in=self._ids_to_ints(hashtags)
             ).order_by("id")
 
-        return queryset.distinct()
+        return queryset.distinct().order_by("-created_at")
 
     def get_serializer_class(self):
         if self.action == "list":
