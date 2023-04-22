@@ -13,7 +13,6 @@ from network.serializers import (
     UserListSerializer,
     UserDetailSerializer,
     UserFollowSerializer,
-    UserUnfollowSerializer,
     HashtagSerializer,
     PostSerializer,
     PostImageSerializer,
@@ -52,45 +51,7 @@ class UserViewSet(
     def get_serializer_class(self):
         if self.action == "list":
             return UserListSerializer
-        if self.action == "follow":
-            return UserFollowSerializer
-        if self.action == "unfollow":
-            return UserUnfollowSerializer
         return UserDetailSerializer
-
-    @action(
-        methods=["POST"],
-        detail=True,
-        url_path="follow",
-        permission_classes=(IsAuthenticated,),
-    )
-    def follow(self, request, pk=None):
-        """Endpoint to follow specific user"""
-        following_user = self.get_object()
-        current_user = self.request.user
-        serializer = self.get_serializer(following_user, data=request.data)
-        if serializer.is_valid():
-            following_user.followed_by.add(current_user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(
-        methods=["POST"],
-        detail=True,
-        url_path="unfollow",
-        permission_classes=(IsAuthenticated,),
-    )
-    def unfollow(self, request, pk=None):
-        """Endpoint to unfollow specific user"""
-        following_user = self.get_object()
-        current_user = self.request.user
-        serializer = self.get_serializer(following_user, data=request.data)
-        if serializer.is_valid():
-            following_user.followed_by.remove(current_user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @extend_schema(
         parameters=[
@@ -208,6 +169,29 @@ class PostToggleLikeView(generics.GenericAPIView):
             else:
                 post.liked_by.remove(user)
             serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserToggleFollowView(generics.GenericAPIView):
+    serializer_class = UserFollowSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, pk=None):
+        """Endpoint to follow specific user"""
+        following_user = get_user_model().objects.get(id=pk)
+        current_user = self.request.user
+        followers = following_user.followed_by.all()
+        serializer = self.get_serializer(following_user, data=request.data)
+
+        if serializer.is_valid():
+            if current_user not in followers:
+                following_user.followed_by.add(current_user)
+            else:
+                following_user.followed_by.remove(current_user)
+            serializer.save()
+
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

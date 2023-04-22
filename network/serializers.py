@@ -35,11 +35,27 @@ class UserDetailSerializer(serializers.ModelSerializer):
 
 
 class UserFollowSerializer(UserDetailSerializer):
-    pass
-
-
-class UserUnfollowSerializer(UserDetailSerializer):
-    pass
+    class Meta:
+        model = get_user_model()
+        fields = (
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "is_staff",
+            "image",
+            "bio",
+            "followers",
+        )
+        read_only_fields = (
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "is_staff",
+            "image",
+            "bio",
+        )
 
 
 class HashtagSerializer(serializers.ModelSerializer):
