@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Count
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter
-from rest_framework import mixins, viewsets, status
+from rest_framework import mixins, viewsets, status, generics
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -19,6 +19,7 @@ from network.serializers import (
     PostImageSerializer,
     PostListSerializer,
     PostDetailSerializer,
+    PostToggleLikeSerializer,
 )
 
 
@@ -189,3 +190,24 @@ class PostViewSet(viewsets.ModelViewSet):
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
+
+
+class PostToggleLikeView(generics.GenericAPIView):
+    serializer_class = PostToggleLikeSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, pk=None):
+        post = Post.objects.get(id=pk)
+        user = self.request.user
+        liked_user = post.liked_by.all()
+        serializer = self.serializer_class(post, data=request.data)
+
+        if serializer.is_valid():
+            if user not in liked_user:
+                post.liked_by.add(user)
+            else:
+                post.liked_by.remove(user)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

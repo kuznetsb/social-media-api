@@ -94,3 +94,27 @@ class PostDetailSerializer(PostSerializer):
             "id",
             "author",
         )
+
+
+class PostToggleLikeSerializer(PostDetailSerializer):
+    class Meta:
+        model = Post
+        fields = (
+            "id",
+            "title",
+            "content",
+            "hashtags",
+            "image",
+            "created_at",
+            "author",
+            "liked_by",
+        )
+        read_only_fields = (
+            "id",
+            "title",
+            "content",
+            "hashtags",
+            "image",
+            "created_at",
+            "author",
+        )
