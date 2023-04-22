@@ -97,7 +97,7 @@ class PostViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
 
     @staticmethod
-    def _hashtag_names_to_ints(qs):
+    def _ids_to_ints(qs):
         """Converts a list of string IDs to a list of integers"""
         return [int(str_id) for str_id in qs.split(",")]
 
@@ -109,7 +109,10 @@ class PostViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(
                 user__id__in=list(following_users_id) + [user.id]
             )
-        hashtags = self.request.query_params.get("hashtag")
+        hashtags = self.request.query_params.get("hashtags")
+        if hashtags:
+            queryset = queryset.filter(hashtag__id__in=hashtags).order_by("id")
+
         return queryset.distinct()
 
     def get_serializer_class(self):
