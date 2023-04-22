@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from network.models import Hashtag, Post
-from network.permissions import IsOwnerOrReadOnly
+from network.permissions import IsOwnerOrReadOnly, IsUserOrReadOnly
 from network.serializers import (
     UserListSerializer,
     UserDetailSerializer,
@@ -22,10 +22,14 @@ from network.serializers import (
 
 
 class UserViewSet(
-    mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
 ):
     queryset = get_user_model().objects.all()
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsUserOrReadOnly)
 
     def get_queryset(self):
         queryset = get_user_model().objects.all()
@@ -46,12 +50,11 @@ class UserViewSet(
     def get_serializer_class(self):
         if self.action == "list":
             return UserListSerializer
-        if self.action == "retrieve":
-            return UserDetailSerializer
         if self.action == "follow":
             return UserFollowSerializer
         if self.action == "unfollow":
             return UserUnfollowSerializer
+        return UserDetailSerializer
 
     @action(
         methods=["POST"],
