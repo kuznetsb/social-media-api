@@ -33,7 +33,7 @@ class UploadMyImageView(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        user = request.user
+        user = self.request.user
         serializer = self.serializer_class(user, data=request.data)
 
         if serializer.is_valid():
