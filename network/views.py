@@ -158,16 +158,13 @@ class PostToggleLikeView(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, pk=None):
+        """Endpoint to like or dislike specific post"""
         post = Post.objects.get(id=pk)
         user = self.request.user
-        liked_user = post.liked_by.all()
         serializer = self.serializer_class(post, data=request.data)
 
         if serializer.is_valid():
-            if user not in liked_user:
-                post.liked_by.add(user)
-            else:
-                post.liked_by.remove(user)
+            post.toggle_like(user)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -179,17 +176,13 @@ class UserToggleFollowView(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, pk=None):
-        """Endpoint to follow specific user"""
+        """Endpoint to follow or unfollow specific user"""
         following_user = get_user_model().objects.get(id=pk)
         current_user = self.request.user
-        followers = following_user.followed_by.all()
         serializer = self.get_serializer(following_user, data=request.data)
 
         if serializer.is_valid():
-            if current_user not in followers:
-                following_user.followed_by.add(current_user)
-            else:
-                following_user.followed_by.remove(current_user)
+            following_user.toggle_follow(current_user)
             serializer.save()
 
             return Response(serializer.data, status=status.HTTP_200_OK)

@@ -40,6 +40,13 @@ class Post(models.Model):
     def __str__(self):
         return f"{self.title} post by {self.user} at {self.created_at}"
 
+    def toggle_like(self, user):
+        """Toggles the liked state of the post for the given user."""
+        if user in self.liked_by.all():
+            self.liked_by.remove(user)
+        else:
+            self.liked_by.add(user)
+
 
 class Comment(models.Model):
     content = models.TextField()

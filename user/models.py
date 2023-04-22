@@ -74,3 +74,10 @@ class User(AbstractUser):
         if self.first_name and self.last_name:
             user += ", Full name:" + self.get_full_name()
         return user
+
+    def toggle_follow(self, user):
+        """Switch following parameter for user"""
+        if user in self.followed_by.all():
+            self.followed_by.remove(user)
+        else:
+            self.followed_by.add(user)
