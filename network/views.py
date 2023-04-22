@@ -116,7 +116,6 @@ class PostViewSet(viewsets.ModelViewSet):
         return queryset.distinct().order_by("-created_at")
 
     def get_serializer_class(self):
-        print(self.action)
         if self.action in ("list", "see_liked_posts"):
             return PostListSerializer
         if self.action == "retrieve":
