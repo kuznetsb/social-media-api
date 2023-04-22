@@ -60,7 +60,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ("id", "title", "content", "hashtag", "image", "created_at", "author")
+        fields = ("id", "title", "content", "hashtags", "image", "created_at", "author")
 
 
 class PostImageSerializer(serializers.ModelSerializer):
@@ -70,20 +70,20 @@ class PostImageSerializer(serializers.ModelSerializer):
 
 
 class PostListSerializer(PostSerializer):
-    hashtag = HashtagSerializer(read_only=True, many=True)
+    hashtags = HashtagSerializer(read_only=True, many=True)
 
     class Meta:
         model = Post
-        fields = ("id", "title", "hashtag", "image", "created_at", "author")
+        fields = ("id", "title", "hashtags", "image", "created_at", "author")
         read_only_fields = ("id", "title", "image", "created_at", "author")
 
 
 class PostDetailSerializer(PostSerializer):
-    hashtag = HashtagSerializer(read_only=True, many=True)
+    hashtags = HashtagSerializer(read_only=True, many=True)
 
     class Meta:
         model = Post
-        fields = ("id", "title", "content", "hashtag", "image", "created_at", "author")
+        fields = ("id", "title", "content", "hashtags", "image", "created_at", "author")
         read_only_fields = (
             "id",
             "author",

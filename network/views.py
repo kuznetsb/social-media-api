@@ -102,7 +102,7 @@ class PostViewSet(viewsets.ModelViewSet):
         return [int(str_id) for str_id in qs.split(",")]
 
     def get_queryset(self):
-        queryset = Post.objects.select_related("user").prefetch_related("hashtag")
+        queryset = Post.objects.select_related("user").prefetch_related("hashtags")
         if self.action == "list":
             user = get_user_model().objects.get(id=self.request.user.id)
             following_users_id = user.users.values_list("id", flat=True)
@@ -111,7 +111,7 @@ class PostViewSet(viewsets.ModelViewSet):
             )
         hashtags = self.request.query_params.get("hashtags")
         if hashtags:
-            queryset = queryset.filter(hashtag__id__in=hashtags).order_by("id")
+            queryset = queryset.filter(hashtags__id__in=hashtags).order_by("id")
 
         return queryset.distinct()
 
