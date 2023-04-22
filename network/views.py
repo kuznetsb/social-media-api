@@ -1,16 +1,17 @@
 from django.contrib.auth import get_user_model
 from rest_framework import mixins, viewsets, status
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
-from network.models import Hashtag
+from network.models import Hashtag, Post
 from network.serializers import (
     UserListSerializer,
     UserDetailSerializer,
     UserFollowSerializer,
     UserUnfollowSerializer,
     HashtagSerializer,
+    PostSerializer,
 )
 
 
@@ -85,3 +86,12 @@ class HashtagViewSet(viewsets.ModelViewSet):
     queryset = Hashtag.objects.all()
     serializer_class = HashtagSerializer
     permission_classes = (IsAuthenticated,)
+
+
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

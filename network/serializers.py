@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from network.models import Hashtag
+from network.models import Hashtag, Post
 
 
 class UserListSerializer(serializers.ModelSerializer):
@@ -51,3 +51,13 @@ class HashtagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hashtag
         fields = ("id", "name")
+
+
+class PostSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        source="user", read_only=True, many=False, slug_field="email"
+    )
+
+    class Meta:
+        model = Post
+        fields = ("id", "title", "content", "hashtag", "image", "created_at", "author")
