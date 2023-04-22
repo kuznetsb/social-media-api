@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -19,7 +20,12 @@ class UserManageView(generics.RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_object(self):
-        return self.request.user
+        user = self.request.user
+        return (
+            get_user_model()
+            .objects.prefetch_related("followed_by", "users")
+            .get(id=user.id)
+        )
 
 
 class UploadMyImageView(generics.GenericAPIView):

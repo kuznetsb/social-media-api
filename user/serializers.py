@@ -36,6 +36,7 @@ class UserFollowersSerializer(serializers.ModelSerializer):
 
 class MyDetailSerializer(UserSerializer):
     followers = UserFollowersSerializer(source="followed_by", many=True, read_only=True)
+    following = UserFollowersSerializer(source="users", many=True, read_only=True)
 
     class Meta:
         model = get_user_model()
@@ -49,6 +50,7 @@ class MyDetailSerializer(UserSerializer):
             "image",
             "bio",
             "followers",
+            "following",
         )
         read_only_fields = ("is_staff",)
         extra_kwargs = {"password": {"write_only": True, "min_length": 5}}
