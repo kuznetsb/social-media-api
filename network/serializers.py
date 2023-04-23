@@ -100,16 +100,6 @@ class PostSerializer(serializers.ModelSerializer):
             "author",
         )
 
-    def validate(self, attrs):
-        data = super().validate(attrs=attrs)
-        user = self.context["request"].user
-        title = attrs["title"]
-        if Post.objects.filter(user=user, title=title).exists():
-            raise ValidationError(
-                "A post with this title already exists for this user."
-            )
-        return data
-
 
 class PostImageSerializer(serializers.ModelSerializer):
     class Meta:
