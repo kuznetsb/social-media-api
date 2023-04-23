@@ -14,6 +14,7 @@ Documented api with basic social media functionality
 10. Users can filter posts by hashtags.
 11. Users can to like and unlike posts. Users can view the list of posts they have liked. 
 12. Users can add comments to posts and view comments on posts.
+13. Possibility to schedule Post creation (you can select the time to create the Post before creating of it).
 
 ### Permissions:
 1. Only authenticated users can perform actions such as creating posts, liking posts, and following/unfollowing users.
@@ -33,4 +34,6 @@ Documented api with basic social media functionality
 - Create new Postgres DB & User
 - copy .env.sample -> .env and populate it
 - Run migrations: `python manage.py migrate`
+- Run Redis server: `docker run -d -p 6379:6379 redis`
+- Run celery worker for tasks handling: `celery -A social_media worker -l INFO`
 - Run app: `python manage.py runserver`
