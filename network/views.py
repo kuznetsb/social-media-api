@@ -95,6 +95,7 @@ class PostViewSet(viewsets.ModelViewSet):
         queryset = (
             Post.objects.select_related("user")
             .prefetch_related("hashtags")
+            .prefetch_related("comments__user")
             .annotate(likes=Count("liked_by"), comments_amount=Count("comments"))
         )
         if self.action == "list":

@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from network.models import Hashtag, Post
+from network.models import Hashtag, Post, Comment
 
 
 class UserListSerializer(serializers.ModelSerializer):
@@ -64,6 +64,16 @@ class HashtagSerializer(serializers.ModelSerializer):
         fields = ("id", "name")
 
 
+class CommentListSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        source="user", read_only=True, many=False, slug_field="email"
+    )
+
+    class Meta:
+        model = Comment
+        fields = ("id", "content", "author")
+
+
 class PostSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         source="user", read_only=True, many=False, slug_field="email"
@@ -103,6 +113,7 @@ class PostListSerializer(PostSerializer):
 class PostDetailSerializer(PostSerializer):
     hashtags = HashtagSerializer(read_only=True, many=True)
     liked_by = UserListSerializer(many=True, read_only=True)
+    comments = CommentListSerializer(many=True, read_only=True)
 
     class Meta:
         model = Post
@@ -115,6 +126,7 @@ class PostDetailSerializer(PostSerializer):
             "created_at",
             "author",
             "liked_by",
+            "comments",
         )
         read_only_fields = (
             "id",
@@ -134,6 +146,7 @@ class PostToggleLikeSerializer(PostDetailSerializer):
             "created_at",
             "author",
             "liked_by",
+            "comments",
         )
         read_only_fields = (
             "id",
