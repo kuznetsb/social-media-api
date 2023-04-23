@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
 from network.models import Hashtag, Post, Comment
@@ -98,6 +99,16 @@ class PostSerializer(serializers.ModelSerializer):
             "schedule",
             "author",
         )
+
+    def validate(self, attrs):
+        data = super().validate(attrs=attrs)
+        user = self.context["request"].user
+        title = attrs["title"]
+        if Post.objects.filter(user=user, title=title).exists():
+            raise ValidationError(
+                "A post with this title already exists for this user."
+            )
+        return data
 
 
 class PostImageSerializer(serializers.ModelSerializer):
