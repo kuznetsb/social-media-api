@@ -7,6 +7,7 @@ from network.views import (
     PostViewSet,
     PostToggleLikeView,
     UserToggleFollowView,
+    AddCommentView,
 )
 
 router = routers.DefaultRouter()
@@ -25,6 +26,11 @@ urlpatterns = [
         "users/<int:pk>/toggle-follow/",
         UserToggleFollowView.as_view(),
         name="user_toggle_follow",
+    ),
+    path(
+        "posts/<int:pk>/comment/",
+        AddCommentView.as_view(),
+        name="post_add_comment",
     ),
 ]
 

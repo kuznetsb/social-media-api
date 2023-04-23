@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 
 from network.models import Hashtag, Post, Comment
 
@@ -62,6 +63,13 @@ class HashtagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hashtag
         fields = ("id", "name")
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ("id", "content", "post", "user")
+        read_only_fields = ("id", "post", "user")
 
 
 class CommentListSerializer(serializers.ModelSerializer):

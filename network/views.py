@@ -19,6 +19,7 @@ from network.serializers import (
     PostListSerializer,
     PostDetailSerializer,
     PostToggleLikeSerializer,
+    CommentSerializer,
 )
 
 
@@ -205,6 +206,24 @@ class UserToggleFollowView(generics.GenericAPIView):
         if serializer.is_valid():
             following_user.toggle_follow(current_user)
             serializer.save()
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AddCommentView(generics.GenericAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, pk=None):
+        """Endpoint to add comment to specific post"""
+        post = Post.objects.get(id=pk)
+        user = self.request.user
+        serializer = self.get_serializer(data=self.request.data)
+
+        if serializer.is_valid():
+            serializer.save(user=user, post=post)
 
             return Response(serializer.data, status=status.HTTP_200_OK)
 
