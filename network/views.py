@@ -150,7 +150,7 @@ class PostViewSet(viewsets.ModelViewSet):
                 time_obj = datetime.datetime.strptime(schedule, "%Y-%m-%dT%H:%M")
                 tz = timezone.get_current_timezone()
                 time_aware = timezone.make_aware(time_obj, timezone=tz)
-                data = self.request.data.copy()
+                data = serializer.data.copy()
                 data["user_id"] = self.request.user.id
                 create_post.apply_async(
                     args=[data],

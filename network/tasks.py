@@ -8,7 +8,6 @@ from celery import shared_task
 @shared_task
 def create_post(data):
     user_id = data.pop("user_id")
-    data.pop("csrfmiddlewaretoken")
     serializer = PostSerializer(data=data)
     if serializer.is_valid():
         user = get_user_model().objects.get(id=user_id)
