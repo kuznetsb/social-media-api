@@ -99,12 +99,13 @@ class PostViewSet(viewsets.ModelViewSet):
             .prefetch_related("comments__user")
             .annotate(likes=Count("liked_by"), comments_amount=Count("comments"))
         )
-        if self.action == "list":
+        if self.action == "see_my_posts":
             user = get_user_model().objects.get(id=self.request.user.id)
-            following_users_id = user.users.values_list("id", flat=True)
-            queryset = queryset.filter(
-                user__id__in=list(following_users_id) + [user.id]
-            )
+            queryset = queryset.filter(user__id__in=[user.id])
+        if self.action == "see_following_users_posts":
+            user = get_user_model().objects.get(id=self.request.user.id)
+            following_users = user.users.all()
+            queryset = queryset.filter(user__in=following_users)
         if self.action == "see_liked_posts":
             user = get_user_model().objects.get(id=self.request.user.id)
             queryset = queryset.filter(liked_by__id__in=[user.id])
@@ -118,7 +119,12 @@ class PostViewSet(viewsets.ModelViewSet):
         return queryset.distinct().order_by("-created_at")
 
     def get_serializer_class(self):
-        if self.action in ("list", "see_liked_posts"):
+        if self.action in (
+            "list",
+            "see_liked_posts",
+            "see_my_posts",
+            "see_following_users_posts",
+        ):
             return PostListSerializer
         if self.action == "retrieve":
             return PostDetailSerializer
@@ -153,6 +159,28 @@ class PostViewSet(viewsets.ModelViewSet):
         description="see posts your liked",
     )
     def see_liked_posts(self, request):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @action(
+        methods=["GET"],
+        detail=False,
+        url_path="my",
+        description="see your posts only",
+    )
+    def see_my_posts(self, request):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @action(
+        methods=["GET"],
+        detail=False,
+        url_path="following",
+        description="see following users posts",
+    )
+    def see_following_users_posts(self, request):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
