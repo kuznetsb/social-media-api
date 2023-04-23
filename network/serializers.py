@@ -96,6 +96,7 @@ class PostSerializer(serializers.ModelSerializer):
             "content",
             "hashtags",
             "created_at",
+            "image",
             "schedule",
             "author",
         )
