@@ -33,6 +33,7 @@ class Post(models.Model):
     liked_by = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="liked_posts", blank=True
     )
+    schedule = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         unique_together = ("title", "user")

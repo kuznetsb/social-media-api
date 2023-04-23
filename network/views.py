@@ -1,5 +1,9 @@
+import datetime
+
+import pytz
 from django.contrib.auth import get_user_model
 from django.db.models import Count
+from django.utils import timezone
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import mixins, viewsets, status, generics
@@ -22,6 +26,7 @@ from network.serializers import (
     CommentSerializer,
     CommentDetailSerializer,
 )
+from network.tasks import create_post
 
 
 class UserViewSet(
@@ -135,6 +140,28 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=self.request.data)
+        schedule = self.request.data.get("schedule")
+        if schedule:
+            time_obj = datetime.datetime.strptime(schedule, "%Y-%m-%dT%H:%M")
+            time_now = timezone.datetime.now()
+            if time_now < time_obj and serializer.is_valid():
+                time_obj = datetime.datetime.strptime(schedule, "%Y-%m-%dT%H:%M")
+                tz = timezone.get_current_timezone()
+                time_aware = timezone.make_aware(time_obj, timezone=tz)
+                data = self.request.data.copy()
+                data["user_id"] = self.request.user.id
+                create_post.apply_async(
+                    args=[data],
+                    eta=time_aware,
+                )
+                return Response(
+                    {"message": "Post scheduled successfully."},
+                    status=status.HTTP_200_OK,
+                )
+        return super().create(request, *args, **kwargs)
 
     @action(
         methods=["POST"],

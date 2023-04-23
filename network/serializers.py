@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
 
 from network.models import Hashtag, Post, Comment
 
@@ -86,10 +85,19 @@ class PostSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         source="user", read_only=True, many=False, slug_field="email"
     )
+    extra_kwargs = {"schedule": {"write_only": True}}
 
     class Meta:
         model = Post
-        fields = ("id", "title", "content", "hashtags", "image", "created_at", "author")
+        fields = (
+            "id",
+            "title",
+            "content",
+            "hashtags",
+            "created_at",
+            "schedule",
+            "author",
+        )
 
 
 class PostImageSerializer(serializers.ModelSerializer):
