@@ -7,7 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from network.models import Hashtag, Post
+from network.models import Hashtag, Post, Comment
 from network.permissions import IsOwnerOrReadOnly, IsUserOrReadOnly
 from network.serializers import (
     UserListSerializer,
@@ -20,6 +20,7 @@ from network.serializers import (
     PostDetailSerializer,
     PostToggleLikeSerializer,
     CommentSerializer,
+    CommentDetailSerializer,
 )
 
 
@@ -256,3 +257,11 @@ class AddCommentView(generics.GenericAPIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ManageCommentView(generics.RetrieveUpdateDestroyAPIView):
+    """Endpoint to edit or delete specific comment"""
+
+    queryset = Comment.objects.all()
+    serializer_class = CommentDetailSerializer
+    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)

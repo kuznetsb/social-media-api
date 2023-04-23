@@ -165,3 +165,14 @@ class PostToggleLikeSerializer(PostDetailSerializer):
             "created_at",
             "author",
         )
+
+
+class CommentDetailSerializer(CommentSerializer):
+    post = PostListSerializer(read_only=True)
+    author = serializers.SlugRelatedField(
+        source="user", read_only=True, many=False, slug_field="email"
+    )
+
+    class Meta:
+        model = Comment
+        fields = ("id", "content", "post", "author")

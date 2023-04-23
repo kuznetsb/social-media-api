@@ -8,6 +8,7 @@ from network.views import (
     PostToggleLikeView,
     UserToggleFollowView,
     AddCommentView,
+    ManageCommentView,
 )
 
 router = routers.DefaultRouter()
@@ -32,6 +33,7 @@ urlpatterns = [
         AddCommentView.as_view(),
         name="post_add_comment",
     ),
+    path("comments/<int:pk>/", ManageCommentView.as_view(), name="manage-comment"),
 ]
 
 app_name = "network"
