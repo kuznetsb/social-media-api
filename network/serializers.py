@@ -137,10 +137,14 @@ class PostListSerializer(PostSerializer):
         read_only_fields = ("id", "title", "image", "created_at", "author")
 
 
-class PostDetailSerializer(PostSerializer):
+class PostDetailSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        source="user", read_only=True, many=False, slug_field="email"
+    )
     hashtags = HashtagSerializer(read_only=True, many=True)
     liked_by = UserListSerializer(many=True, read_only=True)
     comments = CommentListSerializer(many=True, read_only=True)
+    extra_kwargs = {"schedule": {"write_only": True}}
 
     class Meta:
         model = Post
