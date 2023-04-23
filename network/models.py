@@ -54,6 +54,3 @@ class Comment(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="comments"
     )
-
-    class Meta:
-        unique_together = ["content", "post", "user"]
