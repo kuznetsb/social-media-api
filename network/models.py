@@ -35,9 +35,6 @@ class Post(models.Model):
     )
     schedule = models.DateTimeField(null=True, blank=True)
 
-    class Meta:
-        unique_together = ("title", "user")
-
     def __str__(self):
         return f"{self.title} post by {self.user} at {self.created_at}"
 
