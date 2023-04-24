@@ -26,6 +26,7 @@ Documented api with basic social media functionality
 2. JWT token for authentication
 3. Swagger documentation
 4. Postgresql as database
+5. Celery + Redis for task scheduling
 
 ### How to run:
 - Create venv: `python -m venv venv`
